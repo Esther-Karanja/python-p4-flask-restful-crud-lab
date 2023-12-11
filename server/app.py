@@ -48,8 +48,42 @@ class PlantByID(Resource):
         return make_response(jsonify(plant), 200)
 
 
-api.add_resource(PlantByID, '/plants/<int:id>')
 
+def patch(self, id):
+    plant = Plant.query.filter_by(id=id).first()
+    
+    param= request.get_json()
+    for atr in param:
+        setattr(plant, atr['is_in_stock'], param[False])
+
+
+    db.session.add(plant)
+    db.session.commit()
+
+    response_dict = plant.to_dict()
+
+    response = make_response(
+        jsonify(response_dict),
+        200
+    )
+    return response
+
+def delete(self,id):
+    plant = Plant.query.filter_by(id=id).first()
+
+    db.session.delete(plant)
+    db.commit()
+
+    response_dict ={"message": "no content"}
+
+    response = make_response(
+        jsonify(response_dict),
+        200
+    )
+    return response
+
+
+api.add_resource(PlantByID, '/plants/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
